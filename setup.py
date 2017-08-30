@@ -15,7 +15,8 @@ if __name__ == '__main__':
         author="Eileen Kuehn, Max Fischer",
         author_email='maxfischer2781@gmail.com',
         url='https://github.com/MaineKuehn/rpconnect',
-        packages=find_packages(),
+        py_modules=['rpconnect'],
+        # packages=find_packages(),
         # dependencies
         install_requires=[],
         # metadata for package search
