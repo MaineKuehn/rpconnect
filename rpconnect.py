@@ -95,10 +95,10 @@ class RpcServer(object):
             (clientsocket, address) = self._socket.accept()
             logging.info('new connection: %s', address)
             # TODO: register these?
-            connection_thread = threading.Thread(target=self.handle_connection, args=(clientsocket, address))
+            connection_thread = threading.Thread(target=self._handle_connection, args=(clientsocket, address))
             connection_thread.start()
 
-    def handle_connection(self, clientsocket, address):
+    def _handle_connection(self, clientsocket, address):
         logging.info('[%s] handling connection', address)
         try:
             message = read_message(clientsocket)
@@ -125,12 +125,6 @@ class RpcServer(object):
         data = {'type': 'result', 'content': result}
         return json.dumps(data)
 
-    def dispatch_call(self, data):
-        payload_name = data['name']
-        payload_args = data['args']
-        payload_kwargs = data['kwargs']
-        return self._payloads[payload_name](*payload_args, **payload_kwargs)
-
     def __enter__(self):
         return self
 
@@ -140,6 +134,7 @@ class RpcServer(object):
         return False
 
     def close(self):
+        self._socket.shutdown(socket.SHUT_RDWR)
         self._socket.close()
 
     def __del__(self):
