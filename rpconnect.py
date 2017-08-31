@@ -26,19 +26,19 @@ def send_message(target_socket, message: str):
     target_socket.sendall(raw_message)
 
 
-def remote_call(host: str, port: int, name: str, *args, **kwargs):
+def remote_call(_host: str, _port: int, _name: str, *args, **kwargs):
     """
-    Dispatch a call to a :py:class:`RpcServer` at ``host``
+    Dispatch a call to a :py:class:`RpcServer` at ``_host``
 
-    :param host: host to connect to
-    :param port: port on host the server is listening add
-    :param name: name a payload is registered with the server
+    :param _host: host to connect to
+    :param _port: port on host the server is listening add
+    :param _name: name a payload is registered with the server
     :param args: positional arguments for the payload
     :param kwargs: keyword arguments for the payload
     """
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    serversocket.connect((host, port))
-    data = {'name': name, 'args': args, 'kwargs': kwargs}
+    serversocket.connect((_host, _port))
+    data = {'_name': _name, 'args': args, 'kwargs': kwargs}
     message = json.dumps(data)
     send_message(serversocket, message)
     raw_result = read_message(serversocket)
@@ -103,7 +103,7 @@ class RpcServer(object):
         try:
             message = read_message(clientsocket)
             data = json.loads(message)
-            payload_name = data['name']
+            payload_name = data['_name']
             payload_args = data['args']
             payload_kwargs = data['kwargs']
             logging.debug('[%s]: %s(*%s, **%s)', address, payload_name, payload_args, payload_kwargs)
