@@ -76,8 +76,23 @@ class RpcServer(object):
         self._socket.bind((interface, port))
         self._payloads = {}  # name => callable
         self._socket.listen(5)
+        self._closed = False
 
-    def register_payload(self, payload: callable, name: str=None):
+    @property
+    def closed(self):
+        """Whether the server has been shut down"""
+        return self._closed
+
+    @closed.setter
+    def closed(self, value):
+        if not value and self._closed:
+            raise ValueError('cannot re-open a server')
+        if not self._closed:
+            self._socket.shutdown(socket.SHUT_RDWR)
+            self._socket.close()
+            self._closed = True
+
+    def register(self, payload: callable, name: str=None):
         """
         Register a callable under a given name
 
@@ -130,14 +145,10 @@ class RpcServer(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         logging.error('__exit__: %s %s', exc_type, exc_val)
-        self.close()
+        self.closed = True
         return False
 
-    def close(self):
-        self._socket.shutdown(socket.SHUT_RDWR)
-        self._socket.close()
-
     def __del__(self):
-        self.close()
+        self.closed = True
 
 __all__ = ['remote_call', 'RpcServer']

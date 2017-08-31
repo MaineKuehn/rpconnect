@@ -9,7 +9,7 @@ with open(os.path.join(repo_base_dir, 'README.rst'), 'r') as README:
 if __name__ == '__main__':
     setup(
         name="rpconnect",
-        version="0.9.2",
+        version="0.10.0",
         description="lightweight rpc framework",
         long_description=long_description.strip(),
         author="Eileen Kuehn, Max Fischer",
